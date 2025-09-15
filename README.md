@@ -12,7 +12,7 @@ Also check out [`read-excel-file`](https://www.npmjs.com/package/read-excel-file
 npm install write-excel-file --save
 ```
 
-Alternatively, one could [include it on a web page directly via a `<script/>` tag](#cdn).
+Alternatively, one could include it on a web page [directly](#cdn) via a `<script/>` tag.
 
 ## Use
 
@@ -603,7 +603,7 @@ The implementation details are described in a [document](https://gitlab.com/cata
 
 ## CDN
 
-To include this library directly via a `<script/>` tag on a page, one can use any npm CDN service, e.g. [unpkg.com](https://unpkg.com) or [jsdelivr.net](https://jsdelivr.net)
+To include this library directly via a `<script/>` tag on a page, one can use any npm CDN service, e.g. [unpkg.com](https://unpkg.com) or [jsdelivr.com](https://jsdelivr.com)
 
 ```html
 <script src="https://unpkg.com/write-excel-file@1.x/bundle/write-excel-file.min.js"></script>
