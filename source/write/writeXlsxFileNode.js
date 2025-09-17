@@ -104,7 +104,9 @@ export default function writeXlsxFile(data, {
 			if (filePath) {
 				// Doesn't return anything.
 				return archive.getPromise().then(() => {
-					removeDirectoryWithLegacyNodeVersionsSupport(rootPath)
+					return removeDirectoryWithLegacyNodeVersionsSupport(rootPath)
+				}).then(() => {
+					// Doesn't return anything.
 				})
 			} else if (buffer) {
 				// Returns a `Buffer`.
@@ -286,15 +288,17 @@ function createDirectories() {
 			return promise.then(() => createDirectory(directory))
 		}, Promise.resolve())
 
-		return createAllDirectoriesPromise.then(() => ({
-			rootPath,
-			xlPath,
-			mediaPath,
-			drawingsPath,
-			drawingsRelsPath,
-			relsPath,
-			worksheetsPath,
-			worksheetsRelsPath
-		}))
+		return createAllDirectoriesPromise.then(() => {
+			return {
+				rootPath,
+				xlPath,
+				mediaPath,
+				drawingsPath,
+				drawingsRelsPath,
+				relsPath,
+				worksheetsPath,
+				worksheetsRelsPath
+			}
+		})
 	})
 }
