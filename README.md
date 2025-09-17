@@ -621,6 +621,21 @@ To include this library directly via a `<script/>` tag on a page, one can use an
 This project was inspired by [`zipcelx`](https://medium.com/@Nopziiemoo/create-excel-files-using-javascript-without-all-the-fuss-2c4aa5377813) package.
 -->
 
+<!--
+## Babel Runtime Dependency
+
+There's a `@babel/runtime` dependency specified in `package.json`. That dependency is only used in Node.js. Specifically, in `write-excel-file/modules/write/writeXlsxFileNode.js` file.
+
+```js
+import _asyncToGenerator from "@babel/runtime/helpers/asyncToGenerator";
+import _regeneratorRuntime from "@babel/runtime/regenerator";
+```
+
+There, `@babel/runtime` is only used to `import` the "generator"/"regenerator" thing which polyfills `async`/`await` support in older versions of Node.js.
+
+This dependency could be removed if `writeXlsxFileNode.js` file was rewritten without the use of `async`/`await`.
+-->
+
 ## GitHub
 
 On March 9th, 2020, GitHub, Inc. silently [banned](https://medium.com/@catamphetamine/how-github-blocked-me-and-all-my-libraries-c32c61f061d3) my account (erasing all my repos, issues and comments, even in my employer's private repos) without any notice or explanation. Because of that, all source codes had to be promptly moved to GitLab. The [GitHub repo](https://github.com/catamphetamine/write-excel-file) is now only used as a backup (you can star the repo there too), and the primary repo is now the [GitLab one](https://gitlab.com/catamphetamine/write-excel-file). Issues can be reported in any repo.

@@ -18,7 +18,9 @@ import generateStylesXml from './files/styles.xml.js'
 
 import { generateSheets } from './writeXlsxFile.common.js'
 
-export default async function writeXlsxFile(data, {
+// This function doesn't use `async`/`await` in order to avoid adding `@babel/runtime` to `dependencies`.
+// https://gitlab.com/catamphetamine/write-excel-file/-/issues/105
+export default function writeXlsxFile(data, {
 	filePath,
 	buffer,
 	sheet: sheetName,
@@ -37,10 +39,6 @@ export default async function writeXlsxFile(data, {
 	rightToLeft,
 	dateFormat
 } = {}) {
-	// I dunno why it uses `Archive` here instead of something like `JSZip`
-	// that is used in `writeXlsxFileBrowser.js`.
-	const archive = new Archive(filePath)
-
 	const {
 		sheets,
 		getSharedStrings,
@@ -64,56 +62,81 @@ export default async function writeXlsxFile(data, {
 		dateFormat
 	})
 
-	// There doesn't seem to be a way to just append a file into a subdirectory
-	// in `archiver` library, hence using a hacky temporary directory workaround.
-	// https://www.npmjs.com/package/archiver
-	const root = await createTempDirectory()
-	const xl = await createDirectory(path.join(root, 'xl'))
-	const mediaPath = await createDirectory(path.join(xl, 'media'))
-	const drawingsPath = await createDirectory(path.join(xl, 'drawings'))
-	const drawingsRelsPath = await createDirectory(path.join(drawingsPath, '_rels'))
-	const _rels = await createDirectory(path.join(xl, '_rels'))
-	const worksheetsPath = await createDirectory(path.join(xl, 'worksheets'))
-	const worksheetsRelsPath = await createDirectory(path.join(worksheetsPath, '_rels'))
+	return createDirectories().then(({
+		rootPath,
+		xlPath,
+		mediaPath,
+		drawingsPath,
+		drawingsRelsPath,
+		relsPath,
+		worksheetsPath,
+		worksheetsRelsPath
+	}) => {
+		const promises = [
+			writeFile(path.join(relsPath, 'workbook.xml.rels'), generateWorkbookXmlRels({ sheets })),
+			writeFile(path.join(xlPath, 'workbook.xml'), generateWorkbookXml({ sheets, stickyRowsCount, stickyColumnsCount })),
+			writeFile(path.join(xlPath, 'styles.xml'), generateStylesXml(getStyles())),
+			writeFile(path.join(xlPath, 'sharedStrings.xml'), generateSharedStringsXml(getSharedStrings()))
+		]
 
-	const promises = [
-		writeFile(path.join(_rels, 'workbook.xml.rels'), generateWorkbookXmlRels({ sheets })),
-		writeFile(path.join(xl, 'workbook.xml'), generateWorkbookXml({ sheets, stickyRowsCount, stickyColumnsCount })),
-		writeFile(path.join(xl, 'styles.xml'), generateStylesXml(getStyles())),
-		writeFile(path.join(xl, 'sharedStrings.xml'), generateSharedStringsXml(getSharedStrings()))
-	]
-
-	for (const { id, data, images } of sheets) {
-		promises.push(writeFile(path.join(worksheetsPath, `sheet${id}.xml`), data))
-		promises.push(writeFile(path.join(worksheetsRelsPath, `sheet${id}.xml.rels`), generateSheetXmlRels({ id, images })))
-		if (images) {
-			promises.push(writeFile(path.join(drawingsPath, `drawing${id}.xml`), generateDrawingXml({ images })))
-			promises.push(writeFile(path.join(drawingsRelsPath, `drawing${id}.xml.rels`), generateDrawingXmlRels({ images, sheetId: id })))
-			// Copy images to `xl/media` folder.
-			for (const image of images) {
-				const imageContentReadableStream = getReadableStream(image.content)
-				const imageFilePath = path.join(mediaPath, getImageFileName(image, { sheetId: id, sheetImages: images }))
-				promises.push(writeFileFromStream(imageFilePath, imageContentReadableStream))
+		for (const { id, data, images } of sheets) {
+			promises.push(writeFile(path.join(worksheetsPath, `sheet${id}.xml`), data))
+			promises.push(writeFile(path.join(worksheetsRelsPath, `sheet${id}.xml.rels`), generateSheetXmlRels({ id, images })))
+			if (images) {
+				promises.push(writeFile(path.join(drawingsPath, `drawing${id}.xml`), generateDrawingXml({ images })))
+				promises.push(writeFile(path.join(drawingsRelsPath, `drawing${id}.xml.rels`), generateDrawingXmlRels({ images, sheetId: id })))
+				// Copy images to `xl/media` folder.
+				for (const image of images) {
+					const imageContentReadableStream = getReadableStream(image.content)
+					const imageFilePath = path.join(mediaPath, getImageFileName(image, { sheetId: id, sheetImages: images }))
+					promises.push(writeFileFromStream(imageFilePath, imageContentReadableStream))
+				}
 			}
 		}
-	}
 
-	await Promise.all(promises)
+		return Promise.all(promises).then(() => {
+			const archive = createArchive(filePath, {
+				sheets,
+				images,
+				xlDirectoryPath: xlPath
+			});
 
-	archive.directory(xl, 'xl')
+			if (filePath) {
+				// Doesn't return anything.
+				return archive.getPromise().then(() => {
+					removeDirectoryWithLegacyNodeVersionsSupport(rootPath)
+				})
+			} else if (buffer) {
+				// Returns a `Buffer`.
+				return streamToBuffer(archive.getStream())
+			} else {
+				// Returns a readable `Stream`.
+				return archive.getStream()
+			}
+		})
+	})
+}
+
+// Creates a `*.zip` archive from Excel data and returns a readable `Stream`.
+function createArchive(outputFilePath, {
+	sheets,
+	images,
+	xlDirectoryPath
+}) {
+	// I dunno why `Archive` class is used here instead of something like `JSZip`.
+	// `JSZip` is already used in `writeXlsxFileBrowser.js`, so maybe it would've also fit here.
+	// In that case, `Archive` class could potentially be removed.
+	const archive = new Archive(outputFilePath)
+
+	archive.directory(xlDirectoryPath, 'xl')
 
 	archive.append(rels, '_rels/.rels')
 
-  archive.append(generateContentTypesXml({ images, sheets }), '[Content_Types].xml')
+	archive.append(generateContentTypesXml({ sheets, images }), '[Content_Types].xml')
 
-	if (filePath) {
-		await archive.write()
-		await removeDirectoryWithLegacyNodeVersionsSupport(root)
-	} else if (buffer) {
-		return streamToBuffer(archive.write())
-	} else {
-		return archive.write()
-	}
+	archive.write()
+
+	return archive
 }
 
 // According to Node.js docs:
@@ -234,4 +257,44 @@ function writeFileFromStream(filePath, readableStream) {
 	const writableStream = fs.createWriteStream(filePath)
 	readableStream.pipe(writableStream)
 	return new Promise(resolve => writableStream.on('finish', resolve))
+}
+
+function createDirectories() {
+	// There doesn't seem to be a way to just append a file into a subdirectory
+	// in `archiver` library, hence using a hacky temporary directory workaround.
+	// https://www.npmjs.com/package/archiver
+	return createTempDirectory().then((rootPath) => {
+		const xlPath = path.join(rootPath, 'xl')
+		const mediaPath = path.join(xlPath, 'media')
+		const drawingsPath = path.join(xlPath, 'drawings')
+		const drawingsRelsPath = path.join(drawingsPath, '_rels')
+		const relsPath = path.join(xlPath, '_rels')
+		const worksheetsPath = path.join(xlPath, 'worksheets')
+		const worksheetsRelsPath = path.join(worksheetsPath, '_rels')
+
+		const directories = [
+			xlPath,
+			mediaPath,
+			drawingsPath,
+			drawingsRelsPath,
+			relsPath,
+			worksheetsPath,
+			worksheetsRelsPath
+		]
+
+		const createAllDirectoriesPromise = directories.reduce((promise, directory) => {
+			return promise.then(() => createDirectory(directory))
+		}, Promise.resolve())
+
+		return createAllDirectoriesPromise.then(() => ({
+			rootPath,
+			xlPath,
+			mediaPath,
+			drawingsPath,
+			drawingsRelsPath,
+			relsPath,
+			worksheetsPath,
+			worksheetsRelsPath
+		}))
+	})
 }

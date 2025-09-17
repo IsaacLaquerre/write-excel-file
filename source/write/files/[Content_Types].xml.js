@@ -3,7 +3,7 @@ import getFileExtensionForContentType from '../getFileExtensionForContentType.js
 // Copy-pasted from:
 // https://github.com/davidramos-om/zipcelx-on-steroids/blob/master/src/statics/%5BContent_Types%5D.xml.js
 
-export default function generateContentTypesXml({ images, sheets }) {
+export default function generateContentTypesXml({ sheets, images }) {
 	return '<?xml version="1.0" ?>' +
 		'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
 			'<Default ContentType="application/xml" Extension="xml"/>' +

@@ -77,7 +77,7 @@ function generateXlsxFile(data, {
 
   zip.file('_rels/.rels', rels)
 
-  zip.file('[Content_Types].xml', generateContentTypesXml({ images, sheets }))
+  zip.file('[Content_Types].xml', generateContentTypesXml({ sheets, images }))
 
   const xl = zip.folder('xl')
   xl.file('_rels/workbook.xml.rels', generateWorkbookXmlRels({ sheets }))

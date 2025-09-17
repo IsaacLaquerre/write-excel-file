@@ -23,7 +23,7 @@
 
 		"es6": {
 			"presets": [
-				["@babel/env", { modules: false }]
+				["@babel/env", { "modules": false }]
 			],
 
 			"plugins": [
@@ -44,7 +44,7 @@
 
 		"es6/server": {
 			"presets": [
-				["@babel/env", { modules: false }]
+				["@babel/env", { "modules": false }]
 			],
 
 			"plugins": [
