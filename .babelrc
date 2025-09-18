@@ -1,56 +1,9 @@
 {
-	"env": {
-		"development": {
-			"presets": [
-				"@babel/env"
-			],
+	"presets": [
+		"@babel/env"
+	],
 
-			"plugins": [
-				"@babel/transform-runtime",
-				["@babel/transform-for-of", { "loose": true }]
-			]
-		},
-
-		"commonjs": {
-			"presets": [
-				"@babel/env"
-			],
-
-			"plugins": [
-				["@babel/transform-for-of", { "loose": true }]
-			]
-		},
-
-		"es6": {
-			"presets": [
-				["@babel/env", { "modules": false }]
-			],
-
-			"plugins": [
-				["@babel/transform-for-of", { "loose": true }]
-			]
-		},
-
-		"commonjs/server": {
-			"presets": [
-				"@babel/env"
-			],
-
-			"plugins": [
-				["@babel/transform-for-of", { "loose": true }],
-				"@babel/plugin-transform-runtime"
-			]
-		},
-
-		"es6/server": {
-			"presets": [
-				["@babel/env", { "modules": false }]
-			],
-
-			"plugins": [
-				["@babel/transform-for-of", { "loose": true }],
-				"@babel/plugin-transform-runtime"
-			]
-		}
-	}
+	"plugins": [
+		["@babel/transform-for-of", { "loose": true }]
+	]
 }
