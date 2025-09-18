@@ -1,9 +1,23 @@
 {
-	"presets": [
-		"@babel/env"
-	],
+	"env": {
+		"commonjs": {
+			"presets": [
+				"@babel/env"
+			],
 
-	"plugins": [
-		["@babel/transform-for-of", { "loose": true }]
-	]
+			"plugins": [
+				["@babel/transform-for-of", { "loose": true }]
+			]
+		},
+
+		"esm": {
+			"presets": [
+				["@babel/env", { "modules": false }]
+			],
+
+			"plugins": [
+				["@babel/transform-for-of", { "loose": true }]
+			]
+		}
+	}
 }
