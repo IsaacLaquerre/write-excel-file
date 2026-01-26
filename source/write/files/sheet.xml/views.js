@@ -6,7 +6,13 @@ export default function generateViews({
 	stickyColumnsCount,
 	showGridLines,
 	zoomScale,
+<<<<<<< HEAD
 	rightToLeft
+=======
+	rightToLeft,
+	selected,
+	sheetId
+>>>>>>> dfc0e63 (Added the pattern properties to getCellStyleProperties.js and added back the 'selected' option)
 }) {
 	if (!stickyRowsCount && !stickyColumnsCount && !(showGridLines === false) && !rightToLeft) {
 		return ''

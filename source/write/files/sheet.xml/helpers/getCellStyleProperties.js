@@ -10,6 +10,8 @@ export default function getCellStyleProperties(cell) {
 		fontWeight,
 		fontStyle,
 		color,
+		fillPattern,
+		patternColor,
 		backgroundColor,
 		borderColor,
 		borderStyle,
@@ -33,6 +35,8 @@ export default function getCellStyleProperties(cell) {
 		fontWeight ||
 		fontStyle ||
 		color ||
+		fillPattern ||
+		patternColor ||
 		backgroundColor ||
 		borderColor ||
 		borderStyle ||
@@ -56,6 +60,8 @@ export default function getCellStyleProperties(cell) {
 			fontWeight,
 			fontStyle,
 			color,
+			fillPattern,
+			patternColor,
 			backgroundColor,
 			borderColor,
 			borderStyle,

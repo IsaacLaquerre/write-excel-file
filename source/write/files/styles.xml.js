@@ -70,18 +70,16 @@ export default function generateStylesXml({ formats, styles, conditionalStyles, 
 
   // MS Office 2007 Excel seems to require a `<fills/>` element to exist.
   // without it, MS Office 2007 Excel thinks that the file is broken.
-  xml += "<fills count=\"".concat(fills.length, "\">");
-  for (var _iterator2 = _createForOfIteratorHelperLoose(fills), _step2; !(_step2 = _iterator2()).done;) {
-    var fill = _step2.value,
-        _color = fill.color,
-        _fillPattern = fill.fillPattern || "solid",
-        _patternColor = fill.patternColor,
-        gray125 = fill.gray125;
+  xml += `<fills count="${fills.length}">`
+  for (const fill of fills) {
+    const { color, fillPattern, patternColor, gray125 } = fill
     xml += '<fill>';
-    if (_color) {
-      xml += `<patternFill patternType="${_fillPattern}">`;
-      xml += '<fgColor rgb="'.concat($attr(getColor((_fillPattern !== "solid" && _patternColor ? _patternColor : _color))), '"/>');
-      xml += '<bgColor ' + (_fillPattern !== "solid" && _patternColor ? 'rgb="' + $attr(getColor(_color)) : 'indexed="64') + '"/>'
+    if (color) {
+      xml += `<patternFill patternType="${fillPattern}">`;
+      xml += '<fgColor rgb="'.concat($attr(getColor((fillPattern !== "solid" && patternColor ? patternColor : color))), '"/>');
+      // this means foreground color, it's used when using patternFills where you have a background fill and an overlaying colored pattern (foreground)
+      // https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa219624(v=office.11)
+      xml += '<bgColor ' + (fillPattern !== "solid" && patternColor ? 'rgb="' + $attr(getColor(color)) : 'indexed="64') + '"/>'
       xml += '</patternFill>';
     } else if (gray125) {
       // "gray125" fill.

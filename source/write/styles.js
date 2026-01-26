@@ -25,8 +25,7 @@ export default function initStyles({
   const styles = []
   const stylesIndex = {}
 
-  
-  const conditionalStyles = conditionalStyles;
+  //const conditionalStyles = conditionalStyles;
 
   const fonts = []
   const fontsIndex = {}
@@ -76,6 +75,8 @@ export default function initStyles({
     fontWeight,
     fontStyle,
     color,
+    fillPattern,
+    patternColor,
     backgroundColor,
     borderColor,
     borderStyle,
@@ -94,7 +95,7 @@ export default function initStyles({
     const border = undefined
     // Look for an existing style.
     const fontKey = `${fontFamily || '-'}:${fontSize || '-'}:${fontWeight || '-'}:${fontStyle || '-'}:${color || '-'}`
-    const fillKey = backgroundColor || '-'
+    const fillKey = `${backgroundColor || '-'}:${fillPattern || "-"}:${patternColor || "-"}`
     const borderKey =
       `${(topBorderColor || borderColor) || '-'}:${(topBorderStyle || borderStyle) || '-'}` +
       '/' +
@@ -136,15 +137,18 @@ export default function initStyles({
     }
     // Get fill ID.
     let fillId
-    if (backgroundColor) {
+    if (backgroundColor || fillPattern || patternColor) {
       fillId = fillsIndex[fillKey]
       if (fillId === undefined) {
         fillId = fillsIndex[fillKey] = String(fills.length)
         fills.push({
-          color: backgroundColor
+          color: backgroundColor,
+          fillPattern: fillPattern || "solid",
+          patternColor: patternColor || false,
         })
       }
     }
+
     // Get border ID.
     let borderId
     if (
@@ -202,7 +206,7 @@ export default function initStyles({
 
   return {
     getStyles() {
-      return { formats, styles, conditionalStyles , fonts, fills, borders }
+      return { formats, styles, conditionalStyles, fonts, fills, borders }
     },
     getStyle
   }
