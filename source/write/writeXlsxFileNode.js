@@ -36,6 +36,8 @@ export default function writeXlsxFile(data, {
 	stickyRowsCount,
 	stickyColumnsCount,
 	showGridLines,
+	zoomScale,
+	conditionalStyles,
 	rightToLeft,
 	dateFormat
 } = {}) {
@@ -58,6 +60,8 @@ export default function writeXlsxFile(data, {
 		stickyRowsCount,
 		stickyColumnsCount,
 		showGridLines,
+		zoomScale,
+		conditionalStyles,
 		rightToLeft,
 		dateFormat
 	})

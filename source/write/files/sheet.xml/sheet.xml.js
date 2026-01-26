@@ -27,7 +27,6 @@ export default function generateSheetXml(data_, {
 	stickyColumnsCount,
 	showGridLines,
 	zoomScale,
-	selected,
 	conditionalStyles,
 	rightToLeft,
 	sheetId
@@ -45,7 +44,7 @@ export default function generateSheetXml(data_, {
   		customFont,
   		dateFormat
   	}))
-  	.replace('{views}', generateViews({ stickyRowsCount, stickyColumnsCount, showGridLines, zoomScale, selected, rightToLeft }))
+  	.replace('{views}', generateViews({ stickyRowsCount, stickyColumnsCount, showGridLines, zoomScale, rightToLeft }))
   	.replace('{columnsDescription}', generateColumnsDescription({ schema, columns }))
   	.replace('{mergedCellsDescription}', generateMergedCellsDescription(mergedCells))
   	.replace('{layout}', generateLayout({ sheetId, orientation }))

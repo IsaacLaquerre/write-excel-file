@@ -47,6 +47,8 @@ function generateXlsxFile(data, {
   stickyRowsCount,
   stickyColumnsCount,
   showGridLines,
+  zoomScale,
+  conditionalStyles,
   rightToLeft,
   dateFormat
 }) {
@@ -71,6 +73,8 @@ function generateXlsxFile(data, {
     stickyRowsCount,
     stickyColumnsCount,
     showGridLines,
+    zoomScale,
+    conditionalStyles,
     rightToLeft,
     dateFormat
   })
