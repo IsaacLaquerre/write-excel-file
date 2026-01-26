@@ -45,11 +45,7 @@ export default function generateSheetXml(data_, {
   		customFont,
   		dateFormat
   	}))
-<<<<<<< HEAD
-  	.replace('{views}', generateViews({ stickyRowsCount, stickyColumnsCount, showGridLines, zoomScale, rightToLeft }))
-=======
   	.replace('{views}', generateViews({ stickyRowsCount, stickyColumnsCount, showGridLines, zoomScale, rightToLeft, selected, sheetId }))
->>>>>>> dfc0e63 (Added the pattern properties to getCellStyleProperties.js and added back the 'selected' option)
   	.replace('{columnsDescription}', generateColumnsDescription({ schema, columns }))
   	.replace('{mergedCellsDescription}', generateMergedCellsDescription(mergedCells))
   	.replace('{layout}', generateLayout({ sheetId, orientation }))

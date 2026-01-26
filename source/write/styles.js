@@ -25,8 +25,6 @@ export default function initStyles({
   const styles = []
   const stylesIndex = {}
 
-  //const conditionalStyles = conditionalStyles;
-
   const fonts = []
   const fontsIndex = {}
 

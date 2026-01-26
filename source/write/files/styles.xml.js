@@ -210,7 +210,7 @@ export default function generateStylesXml({ formats, styles, conditionalStyles, 
           if (conditionalStyle.fontColor) {
             xml += `<font><color rgb="${conditionalStyle.fontColor}"/></font>`
           }
-        xml += "</dxf>";
+        xml += "</dxf>"
       }
     }
 
