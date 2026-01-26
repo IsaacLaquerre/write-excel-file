@@ -6,7 +6,8 @@ export const FORMAT_ID_STARTS_FROM = 100
 
 export default function initStyles({
   fontFamily: defaultFontFamily,
-  fontSize: defaultFontSize
+  fontSize: defaultFontSize,
+  conditionalStyles: conditionalStyles
 }) {
   const customFont = Boolean(defaultFontFamily || defaultFontSize)
 
@@ -23,6 +24,9 @@ export default function initStyles({
 
   const styles = []
   const stylesIndex = {}
+
+  
+  const conditionalStyles = conditionalStyles;
 
   const fonts = []
   const fontsIndex = {}
@@ -198,7 +202,7 @@ export default function initStyles({
 
   return {
     getStyles() {
-      return { formats, styles, fonts, fills, borders }
+      return { formats, styles, conditionalStyles , fonts, fills, borders }
     },
     getStyle
   }

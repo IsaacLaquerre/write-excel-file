@@ -5,6 +5,8 @@ export default function generateViews({
 	stickyRowsCount,
 	stickyColumnsCount,
 	showGridLines,
+	zoomScale,
+	selected,
 	rightToLeft
 }) {
 	if (!stickyRowsCount && !stickyColumnsCount && !(showGridLines === false) && !rightToLeft) {
@@ -14,7 +16,7 @@ export default function generateViews({
 	let views = ''
 
 	const sheetViewAttributes = {
-		tabSelected: 1,
+		tabSelected: selected + 1 === sheetId ? 1 : 0,
 		workbookViewId: 0
 	}
 
@@ -24,6 +26,10 @@ export default function generateViews({
 
 	if (rightToLeft) {
 		sheetViewAttributes.rightToLeft = 1
+	}
+		
+	if (zoomScale) {
+		sheetViewAttributes.zoomScale = zoomScale;
 	}
 
 	const paneAttributes = {

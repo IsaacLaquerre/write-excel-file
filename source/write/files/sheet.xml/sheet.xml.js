@@ -26,6 +26,9 @@ export default function generateSheetXml(data_, {
 	stickyRowsCount,
 	stickyColumnsCount,
 	showGridLines,
+	zoomScale,
+	selected,
+	conditionalStyles,
 	rightToLeft,
 	sheetId
 }) {
@@ -42,11 +45,23 @@ export default function generateSheetXml(data_, {
   		customFont,
   		dateFormat
   	}))
-  	.replace('{views}', generateViews({ stickyRowsCount, stickyColumnsCount, showGridLines, rightToLeft }))
+  	.replace('{views}', generateViews({ stickyRowsCount, stickyColumnsCount, showGridLines, zoomScale, selected, rightToLeft }))
   	.replace('{columnsDescription}', generateColumnsDescription({ schema, columns }))
   	.replace('{mergedCellsDescription}', generateMergedCellsDescription(mergedCells))
   	.replace('{layout}', generateLayout({ sheetId, orientation }))
   	.replace('{drawing}', generateDrawing({ images }))
+	.replace('{conditionalStyles}', () => {
+		let xml = "";
+		for (let i = 0; i < conditionalStyles[[sheetId - 1]].length; i++) {
+		let conditionalStyle = conditionalStyles[sheetId - 1][i];
+		xml += `<conditionalFormatting sqref="${conditionalStyle.range}">`;
+			xml += `<cfRule type="expression" dxfId="${i}" priority="${i + 1}">`;
+			xml += `<formula>${conditionalStyle.condition.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&apos;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</formula>`;
+			xml += "</cfRule>";
+		xml += "</conditionalFormatting>";
+		}
+		return xml;
+	});
 }
 
 function validateData(data, { schema }) {

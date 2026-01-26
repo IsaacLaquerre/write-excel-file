@@ -19,10 +19,12 @@ export function generateSheets({
   stickyColumnsCount,
   showGridLines,
   rightToLeft,
+  zoomScale,
+  conditionalStyles,
   dateFormat
 }) {
   const { getSharedStrings, getSharedString } = initSharedStrings()
-  const { getStyles, getStyle } = initStyles({ fontFamily, fontSize })
+  const { getStyles, getStyle } = initStyles({ fontFamily, fontSize, conditionalStyles })
 
   // Versions before `1.3.4` had a bug:
   // In a "write multiple sheets" scenario, `columns` parameter
@@ -79,6 +81,8 @@ export function generateSheets({
       stickyColumnsCount,
       showGridLines,
       rightToLeft,
+      zoomScale,
+      conditionalStyles,
       sheetId: sheetIndex + 1
     }))
     sheetIndex++

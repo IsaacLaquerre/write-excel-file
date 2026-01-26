@@ -1,7 +1,7 @@
 import $attr from '../../xml/sanitizeAttributeValue.js'
 import { FORMAT_ID_STARTS_FROM } from '../styles.js'
 
-export default function generateStylesXml({ formats, styles, fonts, fills, borders }) {
+export default function generateStylesXml({ formats, styles, conditionalStyles, fonts, fills, borders }) {
   let xml = '<?xml version="1.0" ?>'
   xml += '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
 
@@ -70,27 +70,30 @@ export default function generateStylesXml({ formats, styles, fonts, fills, borde
 
   // MS Office 2007 Excel seems to require a `<fills/>` element to exist.
   // without it, MS Office 2007 Excel thinks that the file is broken.
-  xml += `<fills count="${fills.length}">`
-  for (const fill of fills) {
-    const { color, gray125 } = fill
-    xml += '<fill>'
-    if (color) {
-      xml += '<patternFill patternType="solid">'
-      xml += `<fgColor rgb="${$attr(getColor(color))}"/>`
-      // Whatever that could mean.
-      xml += '<bgColor indexed="64"/>'
-      xml += '</patternFill>'
+  xml += "<fills count=\"".concat(fills.length, "\">");
+  for (var _iterator2 = _createForOfIteratorHelperLoose(fills), _step2; !(_step2 = _iterator2()).done;) {
+    var fill = _step2.value,
+        _color = fill.color,
+        _fillPattern = fill.fillPattern || "solid",
+        _patternColor = fill.patternColor,
+        gray125 = fill.gray125;
+    xml += '<fill>';
+    if (_color) {
+      xml += `<patternFill patternType="${_fillPattern}">`;
+      xml += '<fgColor rgb="'.concat($attr(getColor((_fillPattern !== "solid" && _patternColor ? _patternColor : _color))), '"/>');
+      xml += '<bgColor ' + (_fillPattern !== "solid" && _patternColor ? 'rgb="' + $attr(getColor(_color)) : 'indexed="64') + '"/>'
+      xml += '</patternFill>';
     } else if (gray125) {
       // "gray125" fill.
       // For some weird reason, MS Office 2007 Excel seems to require that to be present.
       // Otherwise, if absent, it would replace the first `backgroundColor`.
-      xml += '<patternFill patternType="gray125"/>'
+      xml += '<patternFill patternType="gray125"/>';
     } else {
-      xml += '<patternFill patternType="none"/>'
+      xml += '<patternFill patternType="none"/>';
     }
-    xml += '</fill>'
+    xml += '</fill>';
   }
-  xml += '</fills>'
+  xml += '</fills>';
 
   // MS Office 2007 Excel seems to require a `<borders/>` element to exist:
   // without it, MS Office 2007 Excel thinks that the file is broken.
@@ -194,6 +197,27 @@ export default function generateStylesXml({ formats, styles, fonts, fills, borde
     '</xf>'
   }
   xml += `</cellXfs>`
+
+  if (conditionalStyles.length != 0) {
+    let totalStyles = 0;
+    for (let i = 0; i < Object.keys(conditionalStyles).length; i++) {
+      totalStyles += conditionalStyles[i].length;
+    }
+    xml += `<dxfs count="${totalStyles}">`
+
+    for (let i = 0; i < conditionalStyles.length; i++) {
+      for (let j = 0; j < conditionalStyles[i].length; j++) {
+        let conditionalStyle = conditionalStyles[i][j];
+        xml += "<dxf>";
+          if (conditionalStyle.fontColor) {
+            xml += `<font><color rgb="${conditionalStyle.fontColor}"/></font>`
+          }
+        xml += "</dxf>";
+      }
+    }
+
+    xml += "</dxfs>"
+  }
 
   xml += '</styleSheet>'
 
