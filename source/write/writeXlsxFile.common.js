@@ -21,7 +21,6 @@ export function generateSheets({
   rightToLeft,
   zoomScale,
   conditionalStyles,
-  selected,
   dateFormat
 }) {
   const { getSharedStrings, getSharedString } = initSharedStrings()
@@ -84,7 +83,6 @@ export function generateSheets({
       rightToLeft,
       zoomScale,
       conditionalStyles,
-      selected,
       sheetId: sheetIndex + 1
     }))
     sheetIndex++

@@ -58,6 +58,8 @@ interface CellStyle {
 	fontWeight?: FontWeight;
 	fontStyle?: FontStyle;
 	color?: Color;
+	fillPattern?: String;
+	patternColor?: Color;
 	backgroundColor?: Color;
 	borderColor?: Color;
 	borderStyle?: BorderStyle;
@@ -145,6 +147,8 @@ export interface CommonOptions<Object = never> {
   stickyRowsCount?: number;
   showGridLines?: boolean;
   rightToLeft?: boolean;
+  zoomScale?: number;
+  conditionalStyles?: Object[][];
   dateFormat?: string;
 }
 

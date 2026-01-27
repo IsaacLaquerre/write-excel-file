@@ -207,8 +207,25 @@ export default function generateStylesXml({ formats, styles, conditionalStyles, 
       for (let j = 0; j < conditionalStyles[i].length; j++) {
         let conditionalStyle = conditionalStyles[i][j];
         xml += "<dxf>";
-          if (conditionalStyle.fontColor) {
-            xml += `<font><color rgb="${conditionalStyle.fontColor}"/></font>`
+          if (conditionalStyle.fontStyle || conditionalStyle.fontColor) {
+            xml += "<font>"
+            if (conditionalStyle.fontStyle) {
+              let fontStyles = conditionalStyle.fontStyle
+              if (fontStyles.bold) xml += "<b/>"
+              if (fontStyles.italic) xml += "<i/>"
+              if (fontStyles.strikethrough) xml += "<strike/>"
+              if (fontStyles.underline) fontStyles.underline.double ? xml += '<u val="double"/>' : xml += "<u/>"
+            }
+            if (conditionalStyle.fontColor) xml += `<color rgb="${$attr(getColor(conditionalStyle.fontColor))}"/>`
+            xml += "</font>"
+          }
+          if (conditionalStyle.backgroundColor) {
+            xml += "<fill>"
+            xml += `<patternFill patternType="${conditionalStyle.fillPattern !== "solid" && conditionalStyle.patternColor ? conditionalStyle.fillPattern : "solid"}">`
+            xml += '<fgColor rgb="'.concat($attr(getColor((conditionalStyle.fillPattern !== "solid" && conditionalStyle.patternColor ? conditionalStyle.patternColor : conditionalStyle.backgroundColor))), '"/>');
+            xml += '<bgColor ' + (conditionalStyle.fillPattern !== "solid" && conditionalStyle.patternColor ? 'rgb="' + $attr(getColor(conditionalStyle.backgroundColor)) : 'indexed="64') + '"/>'
+            xml += "</patternFill>"
+            xml += "</fill>"
           }
         xml += "</dxf>"
       }
