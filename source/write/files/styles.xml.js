@@ -93,6 +93,18 @@ export default function generateStylesXml({ formats, styles, conditionalStyles, 
   }
   xml += '</fills>';
 
+  const getBorderXml = (direction, { style, color }) => {
+    if (color && !style) {
+      style = 'thin'
+    }
+    const hasChildren = color ? true : false
+    return `<${direction}` +
+      (style ? ` style="${$attr(style)}"` : '') +
+      (hasChildren ? '>' : '/>') +
+      (color ? `<color rgb="${$attr(getColor(color))}"/>` : '') +
+      (hasChildren ? `</${direction}>` : '')
+  }
+
   // MS Office 2007 Excel seems to require a `<borders/>` element to exist:
   // without it, MS Office 2007 Excel thinks that the file is broken.
   xml += `<borders count="${borders.length}">`
@@ -103,17 +115,6 @@ export default function generateStylesXml({ formats, styles, conditionalStyles, 
       top,
       bottom
     } = border
-    const getBorderXml = (direction, { style, color }) => {
-      if (color && !style) {
-        style = 'thin'
-      }
-      const hasChildren = color ? true : false
-      return `<${direction}` +
-        (style ? ` style="${$attr(style)}"` : '') +
-        (hasChildren ? '>' : '/>') +
-        (color ? `<color rgb="${$attr(getColor(color))}"/>` : '') +
-        (hasChildren ? `</${direction}>` : '')
-    }
     xml += '<border>'
     xml += getBorderXml('left', left)
     xml += getBorderXml('right', right)
@@ -226,6 +227,14 @@ export default function generateStylesXml({ formats, styles, conditionalStyles, 
             xml += '<bgColor ' + (conditionalStyle.fillPattern !== "solid" && conditionalStyle.patternColor ? 'rgb="' + $attr(getColor(conditionalStyle.backgroundColor)) : 'indexed="64') + '"/>'
             xml += "</patternFill>"
             xml += "</fill>"
+          }
+          if (conditionalStyle.border) {
+            xml += "<border>"
+            if (conditionalStyle.border.left && (conditionalStyle.border.left.style || conditionalStyle.border.left.color)) xml += getBorderXml("left", conditionalStyle.border.left)
+            if (conditionalStyle.border.right && (conditionalStyle.border.right.style || conditionalStyle.border.right.color)) xml += getBorderXml("right", conditionalStyle.border.right)
+            if (conditionalStyle.border.top && (conditionalStyle.border.top.style || conditionalStyle.border.top.color)) xml += getBorderXml("top", conditionalStyle.border.top)
+            if (conditionalStyle.border.bottom && (conditionalStyle.border.bottom.style || conditionalStyle.border.bottom.color)) xml += getBorderXml("bottom", conditionalStyle.border.bottom)
+            xml += "</border>"
           }
         xml += "</dxf>"
       }
